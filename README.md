@@ -15,4 +15,4 @@ Base examples of using golang for system programming and administration tasks. I
 * *udp/tcp ping pong*. Simple network benchmark with multicast support.
 * *rdma ping pong*. Is it possible to work with Infiniband/RoCE with Go? The one possibility is https://github.com/jsgilmore/ib
 * ebpf with golang
-* xml parsing
+* RSS reader. XML parsing.
