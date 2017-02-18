@@ -1,38 +1,52 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"flag"
+	"os"
+	"path/filepath"
+	"path"
 )
 
-
 func hrsize(size int64) string {
-	var value int64 = size
+	var value float64 = float64(size)
 	var postfix string = ""
 
 	switch {
-	case size > 1 << 40:
+	case size > 1<<40:
 		postfix = "TB"
-		value = size / (1 << 40)
-	case size > 1 << 30:
+		value = value / (1 << 40)
+	case size > 1<<30:
 		postfix = "GB"
-		value = size / (1 << 30)
-	case size > 1 << 20:
+		value = value / (1 << 30)
+	case size > 1<<20:
 		postfix = "MB"
-		value = size / (1 << 20)
-	case size > 1 << 10:
+		value = value / (1 << 20)
+	case size > 1<<10:
 		postfix = "KB"
-		value = size / (1 << 10)
+		value = value / (1 << 10)
 	}
-	return fmt.Sprintf("%v%v", value, postfix)
+	return fmt.Sprintf("%.1f%v", value, postfix)
 }
 
+type walker struct {
+	totSize int64
+}
+
+func (w *walker) walkFunc(path string, info os.FileInfo, err error)  error {
+	if err != nil {
+		log.Printf("Error visiting %v: %v", path, err)
+	} else {
+		w.totSize = w.totSize + info.Size()
+	}
+	return nil
+}
 
 func main() {
 
-    //var rsize = flag.Bool("rsize", false, "Calculate directory size recursively")
+	var rsize = flag.Bool("rsize", false, "Calculate directory size recursively")
 	var hr = flag.Bool("hr", false, "Print human readable size (ie M/K/G bytes)")
 
 	flag.Parse()
@@ -53,11 +67,23 @@ func main() {
 	}
 
 	for _, file := range files {
+		var size int64 = 0
 		s := file.ModTime().Format("_2 Jan 2006 15:04:05")
-		if *hr {
-			fmt.Printf("%11s  %s %7s %s\n", file.Mode(), s, hrsize(file.Size()), file.Name())
+
+		if *rsize {
+			w := walker{0}
+			err := filepath.Walk(path.Join(dir, file.Name()), w.walkFunc)
+			if err != nil {
+				log.Fatal(err)
+			}
+			size = w.totSize
 		} else {
-			fmt.Printf("%11s  %s %-15d %s\n", file.Mode(), s, file.Size(), file.Name())
+			size = file.Size()
+		}
+		if *hr {
+			fmt.Printf("%11s  %s %7s %s\n", file.Mode(), s, hrsize(size), file.Name())
+		} else {
+			fmt.Printf("%11s  %s %15d %s\n", file.Mode(), s, size, file.Name())
 		}
 	}
 }
