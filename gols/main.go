@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 	"path"
+	"path/filepath"
 )
 
 func hrsize(size int64) string {
@@ -35,7 +35,7 @@ type walker struct {
 	totSize int64
 }
 
-func (w *walker) walkFunc(path string, info os.FileInfo, err error)  error {
+func (w *walker) walkFunc(path string, info os.FileInfo, err error) error {
 	if err != nil {
 		log.Printf("Error visiting %v: %v", path, err)
 	} else {
