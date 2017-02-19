@@ -38,22 +38,15 @@ func sum(b []byte) int {
 /* Scale vector of 0/1 bytes to smaller size */
 func scale(vec []byte, size int) []float64 {
 	var result []float64
-	sum := func(b []byte) int {
-		s := 0
-		for _, v := range b {
-			s = s + int(v)
-		}
-		return s
-	}
 
 	origSize := len(vec)
-	scale := origSize / size + 1
+	scale := origSize/size + 1
 	max := 0
 	for i := 0; (i+1)*scale < origSize; i++ {
 		result = append(result, float64(sum(vec[i*scale:(i+1)*scale]))/float64(scale))
 		max = i
 	}
-	if (max+1)*scale  < origSize {
+	if (max+1)*scale < origSize {
 		result = append(result, float64(sum(vec[(max+1)*scale:]))/float64(origSize-(max+1)*scale))
 	}
 	return result
@@ -88,21 +81,21 @@ func FileMincore(filename string) ([]byte, error) {
 	return result, nil
 }
 
-func progressBar (b []float64) []byte {
-	result := make([]byte,len(b))
-	var sym byte
+func progressBar(b []float64) []rune {
+	result := make([]rune, len(b))
+	var sym rune
 	for i, v := range b {
 		switch {
 		case v == 0:
 			sym = ' '
 		case v < 0.3:
-			sym = 46
+			sym = 0x2591
 		case v < 0.6:
-			sym = 42
+			sym = 0x2592
 		case v < 1:
-			sym = 111
+			sym = 0x2593
 		default:
-			sym = 35
+			sym = 0x2588
 		}
 		result[i] = sym
 	}
@@ -118,5 +111,5 @@ func main() {
 	cols, _ := getTermSize()
 
 	fmt.Printf("Resident pages: %v/%v (%v%%)\n", sum(res), len(res), 100*sum(res)/len(res))
-	fmt.Printf("[%v]\n",string(progressBar(scale(res, int(cols-2)))))
+	fmt.Printf("[%v]\n", string(progressBar(scale(res, int(cols-2)))))
 }
