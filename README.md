@@ -9,6 +9,7 @@ Base examples of using golang for system programming and administration tasks. I
 * *lsof* like tool to find open files and processes who used it.
 * Log of starting/stopping of all procceses in system.
 * *vmtouch* like tool to find what part of file(s) are placed in page cache. Is it posible to know what part in active list and what part in inactive list?
+* *strace* like tool. Use ptrace API with go.
 
 ## Example apps
 
@@ -16,3 +17,4 @@ Base examples of using golang for system programming and administration tasks. I
 * *rdma ping pong*. Is it possible to work with Infiniband/RoCE with Go? The one possibility is https://github.com/jsgilmore/ib
 * ebpf with golang
 * RSS reader. XML parsing.
+* ASCII art image viewer
